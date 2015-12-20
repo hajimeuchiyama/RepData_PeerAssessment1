@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
@@ -19,7 +14,8 @@ output:
 
 Before loading the data, check if the data file exist in the working directory. If only the zip file exists, then extract the zip file.  
 
-```{r}
+
+```r
 if (!file.exists("activity.csv")){
         if (file.exists("activity.zip")){
                 unzip("activity.zip")
@@ -35,27 +31,65 @@ If either `activity.csv` or `activity.zip` file does not exist in the working di
 
 Now we should have `activity.csv` in the working directory.  
 Load it to a data frame as `activity.df`.
-```{r}
+
+```r
 activity.df <- read.csv("activity.csv")
 ```
 
 Let's take a look at the head and tail of `activity.df` data frame.
-```{r}
+
+```r
 head(activity.df)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
+```r
 tail(activity.df)
+```
+
+```
+##       steps       date interval
+## 17563    NA 2012-11-30     2330
+## 17564    NA 2012-11-30     2335
+## 17565    NA 2012-11-30     2340
+## 17566    NA 2012-11-30     2345
+## 17567    NA 2012-11-30     2350
+## 17568    NA 2012-11-30     2355
 ```
 
 
 Also, summary of data.
-```{r}
+
+```r
 summary(activity.df)
+```
+
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
 ```
 ### 2. Further processing/transformation of data
 
 No further processing/transformation of data is performed.
 However, load `dplyr` package for the ease of data manipulation hereafter and `lattice` package for graphics.
 
-```{r, message = FALSE}
+
+```r
 library(dplyr)
 library(lattice)
 ```
@@ -71,7 +105,8 @@ library(lattice)
 ### 1. Make a histogram
 First create another data frame, `activity_day.df`, which contains aggregated steps (`sum_steps`) for each day.
 Also, remove NAs by using `dplyr::filter` command.
-```{r}
+
+```r
 activity_day.df <- activity.df %>%
         filter(!is.na(steps)) %>%
         group_by(date) %>%
@@ -79,7 +114,8 @@ activity_day.df <- activity.df %>%
 ```
 
 Make a histogram of `activity_day.df`.
-```{r}
+
+```r
 hist(activity_day.df$sum_steps,
      main = "Histogram of total number of steps taken each day \n(Y: Frequency)",
      xlab = "Steps",
@@ -87,10 +123,13 @@ hist(activity_day.df$sum_steps,
      breaks = 30)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
 Make another histogram while changing Y axis to *Density* instead of
 *Frequency* by `freq = FALSE` option. Then add a density curve and rug.
 
-```{r}
+
+```r
 hist(activity_day.df$sum_steps,
      main = "Histogram of total number of steps taken each day \n(Y: Density)",
      xlab = "Steps",
@@ -103,18 +142,30 @@ lines(density(activity_day.df$sum_steps),
 rug(activity_day.df$sum_steps)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
 ### 2. Calculate mean and median of total number of steps taken per day
 
 Mean of the total number of steps taken per day is calculated as follows:
-```{r}
+
+```r
 mean_activity <- mean(activity_day.df$sum_steps)
 mean_activity
 ```
 
+```
+## [1] 10766.19
+```
+
 Similarly, median of the total number of steps taken per day is as follows:
-```{r}
+
+```r
 median_activity <- median(activity_day.df$sum_steps)
 median_activity
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -128,7 +179,8 @@ median_activity
 ### 1. Plot time series
 
 Let's create another data frame, `activity_interval.df`, which contains 5-minute interval and the average number of steps taken across all days per each interval.
-```{r}
+
+```r
 activity_interval.df <- activity.df %>%
         filter(!is.na(steps)) %>%
         group_by(interval) %>%
@@ -136,14 +188,58 @@ activity_interval.df <- activity.df %>%
 ```
 
 Take a look at `activity_interval.df`.
-```{r}
+
+```r
 head(activity_interval.df, 6)
+```
+
+```
+## Source: local data frame [6 x 2]
+## 
+##   interval     steps
+##      (int)     (dbl)
+## 1        0 1.7169811
+## 2        5 0.3396226
+## 3       10 0.1320755
+## 4       15 0.1509434
+## 5       20 0.0754717
+## 6       25 2.0943396
+```
+
+```r
 tail(activity_interval.df, 6)
+```
+
+```
+## Source: local data frame [6 x 2]
+## 
+##   interval     steps
+##      (int)     (dbl)
+## 1     2330 2.6037736
+## 2     2335 4.6981132
+## 3     2340 3.3018868
+## 4     2345 0.6415094
+## 5     2350 0.2264151
+## 6     2355 1.0754717
+```
+
+```r
 summary(activity_interval.df)
 ```
 
+```
+##     interval          steps        
+##  Min.   :   0.0   Min.   :  0.000  
+##  1st Qu.: 588.8   1st Qu.:  2.486  
+##  Median :1177.5   Median : 34.113  
+##  Mean   :1177.5   Mean   : 37.383  
+##  3rd Qu.:1766.2   3rd Qu.: 52.835  
+##  Max.   :2355.0   Max.   :206.170
+```
+
 Plot `activity_interval.df` with X-axis: `interval` and Y-axis: `steps`.
-```{r}
+
+```r
 xyplot(steps~interval,
        data = activity_interval.df,
        type = "l",
@@ -151,16 +247,32 @@ xyplot(steps~interval,
        ylab = "Average Number of Steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+
 ### 2. Find which 5-minute interval contains the maximum number of steps
 Find the 5-min interval containing the maximum number of steps by the following command:
-```{r}
+
+```r
 activity_interval.df$interval[which(activity_interval.df$steps
                                     == max(activity_interval.df$steps))]
 ```
 
+```
+## [1] 835
+```
+
 By using `dplyr::filter` command, you can get the same result while confirming the maximum number of steps.
-```{r}
+
+```r
 filter(activity_interval.df, steps == max(activity_interval.df$steps))
+```
+
+```
+## Source: local data frame [1 x 2]
+## 
+##   interval    steps
+##      (int)    (dbl)
+## 1      835 206.1698
 ```
 
 ## Imputing missing values
@@ -176,16 +288,26 @@ filter(activity_interval.df, steps == max(activity_interval.df$steps))
 
 ### 1. Calculate and report the total number of missing values
 The simplest command to calculate the total number of missing values in a data frame is:
-```{r}
+
+```r
 sum(is.na(activity.df))
+```
+
+```
+## [1] 2304
 ```
 
 In this dataset `activity.df`, variable `steps` is the only column that contains NAs,
 so the above command would suffice.  In order to make sure not to double-count 
 the number of NAs in the same rows, use the below command.
 
-```{r}
+
+```r
 nrow(filter(activity.df, is.na(steps) | is.na(date) | is.na(interval)))
+```
+
+```
+## [1] 2304
 ```
 
 
@@ -198,20 +320,47 @@ Let's consider the below two cases:
 
 The former way, however, might not be very useful. Browsing the original dataset, you will find that NAs likely exist throughout the day.  
 Let's check if the initial insight is correct.  Below command finds the number of NAs on any days that contains NAs.
-```{r}
+
+```r
 activity.df %>%
         group_by(date) %>%
         filter(is.na(steps)) %>%
         summarize(sum(is.na(steps)))
 ```
-A day contains `r 24 * 60 / 5` 5-minute intervals (`24 * 60 / 5`).  For each one of the days above, all 288 of 5-min intervals are indeed filled with NAs. This means that the calculation of mean/median values for those days would not produce any meaningful data.  
+
+```
+## Source: local data frame [8 x 2]
+## 
+##         date sum(is.na(steps))
+##       (fctr)             (int)
+## 1 2012-10-01               288
+## 2 2012-10-08               288
+## 3 2012-11-01               288
+## 4 2012-11-04               288
+## 5 2012-11-09               288
+## 6 2012-11-10               288
+## 7 2012-11-14               288
+## 8 2012-11-30               288
+```
+A day contains 288 5-minute intervals (`24 * 60 / 5`).  For each one of the days above, all 288 of 5-min intervals are indeed filled with NAs. This means that the calculation of mean/median values for those days would not produce any meaningful data.  
 
 On the other hand, the latter method to use mean/median of 5-min intervals appears to be able to provide some meaningful data.  Let's compare the number of non-NA values and that of NAs as follows.
-```{r}
+
+```r
 activity.df %>%
         group_by(interval) %>%
         summarize(sum(!is.na(steps)), sum(is.na(steps)))  %>%
         summary
+```
+
+```
+##     interval      sum(!is.na(steps)) sum(is.na(steps))
+##  Min.   :   0.0   Min.   :53         Min.   :8        
+##  1st Qu.: 588.8   1st Qu.:53         1st Qu.:8        
+##  Median :1177.5   Median :53         Median :8        
+##  Mean   :1177.5   Mean   :53         Mean   :8        
+##  3rd Qu.:1766.2   3rd Qu.:53         3rd Qu.:8        
+##  Max.   :2355.0   Max.   :53         Max.   :8
 ```
 We get 53 non-NA days out of the total 61 days.
 
@@ -220,7 +369,8 @@ I decided to go with **median of 5-min interval** because *Median* preserves the
  
 ### 3.  Create a copy of the original dataset with imputation
 Create another dataset from the original while replacing NAs with the median of that 5-min interval across all days, and name it `activity_imputed.df`.
-```{r}
+
+```r
 activity_imputed.df <- activity.df %>%
         group_by(interval) %>%
         mutate(steps = ifelse(is.na(steps), median(steps, na.rm = TRUE), steps))
@@ -228,7 +378,8 @@ activity_imputed.df <- activity.df %>%
 
 ### 4. Make a histogram of the new dataset with imputation
 Similar to creating the histogram of the original dataset, you need to create another data frame, `act_imp_day.df`,  where `steps` are aggregated by date (`sum_steps`).
-```{r}
+
+```r
 act_imp_day.df <- activity_imputed.df %>%
         filter(!is.na(steps)) %>%
         group_by(date) %>%
@@ -236,7 +387,8 @@ act_imp_day.df <- activity_imputed.df %>%
 ```
 
 Create a histogram.
-```{r}
+
+```r
 hist(act_imp_day.df$sum_steps,
      main = "Histogram of total number of steps taken each day (imputed)\n(Y: Density)",
      xlab = "Steps",
@@ -249,25 +401,37 @@ lines(density(act_imp_day.df$sum_steps),
 rug(act_imp_day.df$sum_steps)
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-22-1.png) 
+
 Mean of the total number of steps taken per day with imputation.
-```{r}
+
+```r
 mean_activity_imp <- mean(act_imp_day.df$sum_steps)
 mean_activity_imp
 ```
 
+```
+## [1] 9503.869
+```
+
 Median of the total number of steps taken per day with imputation.
-```{r}
+
+```r
 median_activity_imp <- median(act_imp_day.df$sum_steps)
 median_activity_imp
+```
+
+```
+## [1] 10395
 ```
 
 Here is the comparison of mean and median values between the original dataset and the new dataset with imputation (NAs being replaced with the median of 5-min interval).
 
 |                         | Mean                  | Median                  |
 |-------------------------|-----------------------|-------------------------|
-| Original Dataset        | `r mean_activity`     | `r median_activity`     |
-| New Dataset with imputation | `r mean_activity_imp` | `r median_activity_imp` |
-| Diff: `new - original`  | **`r mean_activity_imp - mean_activity`** | **`r median_activity_imp - median_activity`** |
+| Original Dataset        | 1.0766189\times 10^{4}     | 10765     |
+| New Dataset with imputation | 9503.8688525 | 10395 |
+| Diff: `new - original`  | **-1262.3198268** | **-370** |
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -280,7 +444,8 @@ Here is the comparison of mean and median values between the original dataset an
 ### 1. Create a new factor variable with two levels: "weekday" and "weekend" in the dataset
 
 Create another data frame `act_imp_wday.df` from the imputed data frame created in the previous section and add a new factor variable `wday` which has two levels: `weekday` and `weekend`.
-```{r}
+
+```r
 act_imp_wday.df <- activity_imputed.df %>%
         mutate(wday = ifelse(weekdays(as.Date(date), abbreviate = TRUE) %in% c("Sun", "Sat"),
                                   "weekend", "weekday")) %>%
@@ -290,14 +455,16 @@ act_imp_wday.df <- activity_imputed.df %>%
 ### 2. Make a panel plot containing a time series plot
 
 Create another data frame `act_interval_comp.df` grouping by both `interval` and `wday`, and calculate `mean` within those groups.
-```{r}
+
+```r
 act_interval_comp.df <- act_imp_wday.df %>%
         group_by(interval, wday) %>%
         summarize(steps = mean(steps, na.rm = TRUE))
 ```
 
 Plot using multipanels.
-```{r}
+
+```r
 xyplot(steps~interval|wday,
        data = act_interval_comp.df,
        type = "l",
@@ -305,3 +472,5 @@ xyplot(steps~interval|wday,
        ylab = "Average Number of Steps",
        layout = c(1,2))
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-27-1.png) 
